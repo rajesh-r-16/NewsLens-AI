@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block heading %}Training Dataset{% endblock %}
+{% block content %}
+<div class="intro"><div><div class="pill">BUILT-IN TRAINING CORPUS</div><h1>News dataset, <em>2,000 records.</em></h1><p>Browse the records included with NewsLens AI. These are separate from your personal classification history.</p></div><a class="btn" href="{{url_for('static',filename='../data/news_dataset_2000.csv')}}"> </a></div>
+<div class="stats">
+<div><span>Total dataset records</span><b>{{total}}</b></div>
+<div><span>Records matching search</span><b>{{filtered}}</b></div>
+<div><span>Categories</span><b>7</b></div>
+<div><span>Records per page</span><b>25</b></div>
+</div>
+<div class="panel"><h3>Category distribution</h3>
+{% for c,n in counts.items() %}<div class="catrow"><span>{{c}}</span><b>{{n}}</b></div>{% endfor %}
+</div>
+<div class="panel">
+<h3>Browse dataset records</h3>
+<form method="get" action="/dataset" class="form" style="display:flex;gap:12px;align-items:end;flex-wrap:wrap">
+<label style="flex:1">Search title, article text, or category<input type="text" name="q" value="{{q}}" placeholder="e.g. technology, cricket, election"></label>
+<button class="btn" type="submit">Search records</button>
+<a class="btn secondary" href="/dataset">Clear</a>
+</form>
+<div class="tablewrap"><table><tr><th>ID</th><th>Title</th><th>Category</th><th>Article text</th></tr>
+{% for r in records %}<tr><td>{{r.id}}</td><td>{{r.title}}</td><td>{{r.category}}</td><td>{{r.text[:240]}}{% if r.text|length>240 %}…{% endif %}</td></tr>{% endfor %}
+</table></div>
+<p class="hint">Showing page {{page}} of {{pages}} · {{records|length}} records on this page.</p>
+<div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+{% if page>1 %}<a class="btn secondary" href="{{url_for('dataset_records',page=page-1,q=q)}}">← Previous</a>{% else %}<span></span>{% endif %}
+{% if page<pages %}<a class="btn" href="{{url_for('dataset_records',page=page+1,q=q)}}">Next →</a>{% endif %}
+</div>
+</div>
+{% endblock %}

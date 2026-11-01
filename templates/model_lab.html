@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block heading %}Model Lab{% endblock %}{% block content %}
+<div class="intro"><div><div class="pill">MODEL OPERATIONS</div><h1>Train and compare <em>models.</em></h1><p>Train and evaluate all supported classifiers using the bundled 2,000-record dataset or your own labeled CSV.</p></div></div>
+<div class="grid">
+<div class="panel"><h3>Available models</h3>
+<div class="modelrow"><b>Hybrid classifier</b><span class="tag">Recommended · Available</span><p>Word and character TF-IDF + Logistic Regression, supplemented by transparent topic keyword signals.</p></div>
+<div class="modelrow"><b>MLP + TF-IDF</b><span class="tag">Available</span><p>Multi-layer perceptron neural network using TF-IDF features.</p></div>
+<div class="modelrow"><b>Logistic Regression</b><span class="tag">Available</span><p>Word and character n-gram features with class-balanced training.</p></div>
+<div class="modelrow"><b>Calibrated Linear SVM</b><span class="tag">Available</span><p>Linear support vector classifier with calibrated probability estimates.</p></div>
+<div class="modelrow"><b>Multinomial Naive Bayes</b><span class="tag">Available</span><p>Probabilistic text baseline using word n-grams.</p></div>
+</div>
+<div class="panel"><h3>Train / evaluate</h3><form method="post" enctype="multipart/form-data" class="form">
+<label>Model<select name="model"><option value="HYBRID">Hybrid (recommended)</option><option value="MLP">MLP + TF-IDF</option><option value="LOGISTIC">Logistic Regression</option><option value="LINEAR_SVM">Calibrated Linear SVM</option><option value="NAIVE_BAYES">Multinomial Naive Bayes</option></select></label>
+<label>Training dataset CSV <small>OPTIONAL</small><input type="file" name="dataset" accept=".csv"></label>
+<p class="hint">CSV requires a title/headline, text/content/article, and category/label column. Leave empty to use the bundled 2,000-record dataset.</p>
+<button class="btn" name="action" value="train">Train selected model</button><button class="btn secondary" name="action" value="evaluate">Evaluate saved Hybrid metrics</button>
+</form>
+<div class="notice"><b>Important dataset note</b><p>The bundled 2,000 records are synthetic demonstration data, not verified real news. The metrics are a held-out split of that dataset and may overestimate performance on real articles. Use a reliable real-world dataset for academic evaluation. Model confidence is not a guarantee of correctness.</p></div></div></div>
+{% if status %}<div class="panel"><h3>Model result</h3>{% if status.error %}<div class="flash danger">{{status.error}}</div>{% else %}<p>{{status.model or 'Model evaluation'}} · {{status.note or ''}}</p><div class="stats"><div><span>Accuracy</span><b>{{"%.3f"|format(status.accuracy)}}</b></div><div><span>Macro precision</span><b>{{"%.3f"|format(status.precision_macro or 0)}}</b></div><div><span>Macro recall</span><b>{{"%.3f"|format(status.recall_macro or 0)}}</b></div><div><span>Macro F1</span><b>{{"%.3f"|format(status.f1_macro or 0)}}</b></div></div><p>Training records: {{status.training_samples or '—'}} · Test samples: {{status.test_samples}} · Dataset records: {{status.dataset_samples or '—'}}</p>{% if status.report %}<div class="tablewrap"><table><tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1</th><th>Support</th></tr>{% for c in status.classes %}{% if status.report[c] is defined %}<tr><td>{{c}}</td><td>{{"%.3f"|format(status.report[c].precision)}}</td><td>{{"%.3f"|format(status.report[c].recall)}}</td><td>{{"%.3f"|format(status.report[c]['f1-score'])}}</td><td>{{status.report[c].support}}</td></tr>{% endif %}{% endfor %}</table></div>{% endif %}{% endif %}</div>{% endif %}{% endblock %}

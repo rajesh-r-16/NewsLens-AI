@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+instance/
+models/*.pkl
+models/*.keras
+models/*.json
+data/generated_demo.jsonl
+.env
